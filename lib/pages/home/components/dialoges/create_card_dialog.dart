@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../app/models/cards/card_type.dart';
+import '../../../../shared/components/buttons/primary_button.dart';
+import '../../../../shared/components/buttons/secondary_button.dart';
+import '../../../../modules/subscription/user_subscription_cubit.dart';
+import '../inputs/card_type_chips.dart';
 
 /// Диалог для создания новой карточки
 class CreateCardDialog extends StatefulWidget {
@@ -15,11 +20,6 @@ class _CreateCardDialogState extends State<CreateCardDialog> {
   final _descriptionController = TextEditingController();
   CardType _selectedType = CardType.normal;
 
-  // Уровень доступа пользователя (для демо используем обычный доступ)
-  // TODO: В будущем получать из UserCubit или AuthCubit
-  static const bool _hasPlus = false;
-  static const bool _hasPremium = false;
-
   @override
   void dispose() {
     _titleController.dispose();
@@ -28,13 +28,19 @@ class _CreateCardDialogState extends State<CreateCardDialog> {
   }
 
   bool _isTypeEnabled(CardType type) {
+    final subscription = context.read<UserSubscriptionCubit>().state;
+
     switch (type) {
       case CardType.normal:
         return true; // Доступен всем
       case CardType.plus:
-        return _hasPlus || _hasPremium; // Доступен Плюс и Премиум пользователям
+        return subscription
+            .type
+            .hasPlus; // Доступен Плюс и Премиум пользователям
       case CardType.premium:
-        return _hasPremium; // Доступен только Премиум пользователям
+        return subscription
+            .type
+            .hasPremium; // Доступен только Премиум пользователям
     }
   }
 
@@ -54,6 +60,7 @@ class _CreateCardDialogState extends State<CreateCardDialog> {
   Widget build(BuildContext context) {
     return AlertDialog(
       title: const Text('Создать карточку'),
+      contentPadding: const EdgeInsets.fromLTRB(24, 20, 24, 0),
       content: Form(
         key: _formKey,
         child: SingleChildScrollView(
@@ -67,6 +74,7 @@ class _CreateCardDialogState extends State<CreateCardDialog> {
                 decoration: const InputDecoration(
                   labelText: 'Название',
                   hintText: 'Введите название карточки',
+                  floatingLabelBehavior: FloatingLabelBehavior.auto,
                 ),
                 validator: (value) {
                   if (value == null || value.trim().isEmpty) {
@@ -86,6 +94,7 @@ class _CreateCardDialogState extends State<CreateCardDialog> {
                 decoration: const InputDecoration(
                   labelText: 'Описание (необязательно)',
                   hintText: 'Введите описание',
+                  floatingLabelBehavior: FloatingLabelBehavior.auto,
                 ),
                 maxLines: 3,
                 textCapitalization: TextCapitalization.sentences,
@@ -102,56 +111,25 @@ class _CreateCardDialogState extends State<CreateCardDialog> {
               const SizedBox(height: 12),
 
               // Чипы для выбора типа
-              Wrap(
-                spacing: 8,
-                children: CardType.values.map((type) {
-                  final isEnabled = _isTypeEnabled(type);
-                  final isSelected = _selectedType == type;
-
-                  return ChoiceChip(
-                    label: Text(type.displayName),
-                    selected: isSelected,
-                    onSelected: isEnabled
-                        ? (selected) {
-                            if (selected) {
-                              setState(() {
-                                _selectedType = type;
-                              });
-                            }
-                          }
-                        : null,
-                    selectedColor: type.borderColor.withValues(alpha: 0.3),
-                    backgroundColor: isEnabled
-                        ? type.borderColor.withValues(alpha: 0.1)
-                        : Colors.grey.withValues(alpha: 0.1),
-                    side: BorderSide(
-                      color: isSelected
-                          ? type.borderColor
-                          : (isEnabled
-                                ? type.borderColor.withValues(alpha: 0.5)
-                                : Colors.grey),
-                      width: isSelected ? 2 : 1,
-                    ),
-                    labelStyle: TextStyle(
-                      color: isEnabled ? type.borderColor : Colors.grey,
-                      fontWeight: isSelected
-                          ? FontWeight.w600
-                          : FontWeight.normal,
-                    ),
-                    showCheckmark: false,
-                  );
-                }).toList(),
+              CardTypeChips(
+                selectedType: _selectedType,
+                onTypeSelected: (type) {
+                  setState(() {
+                    _selectedType = type;
+                  });
+                },
+                isTypeEnabled: _isTypeEnabled,
               ),
             ],
           ),
         ),
       ),
       actions: [
-        TextButton(
+        SecondaryButton(
+          text: 'Отмена',
           onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Отмена'),
         ),
-        ElevatedButton(onPressed: _submit, child: const Text('Создать')),
+        PrimaryButton(text: 'Создать', onPressed: _submit, height: 48),
       ],
     );
   }

@@ -7,7 +7,8 @@ enum AppRoutes {
   onboarding('/onboarding'),
   home('/'),
   subscriptions('/subscriptions'),
-  subscriptionDetail('/subscription/:id');
+  subscriptionDetail('/subscription/:id'),
+  paywall('/paywall');
 
   final String path;
   const AppRoutes(this.path);

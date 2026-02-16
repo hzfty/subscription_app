@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../app/models/cards/card_item.dart';
+import '../../../../shared/components/buttons/primary_button.dart';
+import '../../../../shared/components/buttons/secondary_button.dart';
 
 /// Диалог для подтверждения удаления карточки
 class DeleteCardDialog extends StatelessWidget {
@@ -13,17 +15,15 @@ class DeleteCardDialog extends StatelessWidget {
       title: const Text('Удалить карточку?'),
       content: Text('Вы уверены, что хотите удалить карточку "${card.title}"?'),
       actions: [
-        TextButton(
+        SecondaryButton(
+          text: 'Отмена',
           onPressed: () => Navigator.of(context).pop(false),
-          child: const Text('Отмена'),
         ),
-        ElevatedButton(
+        PrimaryButton(
+          text: 'Удалить',
           onPressed: () => Navigator.of(context).pop(true),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: Colors.red,
-            foregroundColor: Colors.white,
-          ),
-          child: const Text('Удалить'),
+          backgroundColor: Colors.red,
+          height: 48,
         ),
       ],
     );

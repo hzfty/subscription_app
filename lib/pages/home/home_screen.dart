@@ -63,13 +63,15 @@ class _HomeScreenContent extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Ваш список'),
+        backgroundColor: Theme.of(context).colorScheme.primary,
         actions: [
           // Кнопка перехода к экрану подписок
           IconButton(
             icon: const Icon(Icons.subscriptions),
+            color: Theme.of(context).colorScheme.onPrimary,
             tooltip: 'Подписки',
             onPressed: () {
-              context.go('/subscriptions');
+              context.go('/paywall');
             },
           ),
         ],

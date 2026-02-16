@@ -1,9 +1,10 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import '../../pages/home/home_screen.dart';
 import '../../modules/onboarding/onboarding_cubit.dart';
+import '../../pages/home/home_screen.dart';
 import '../../pages/onboarding/onboarding_screen.dart';
+import '../../pages/paywall/paywall_screen.dart';
 import 'app_routes.dart';
 
 /// Конфигурация GoRouter для приложения
@@ -77,6 +78,15 @@ class AppRouter {
               child: Center(child: Text('Subscription ID: $id')),
             );
           },
+        ),
+
+        // ============================================
+        // PAYWALL (ЭКРАН ПОДПИСОК)
+        // ============================================
+        GoRoute(
+          path: AppRoutes.paywall.path,
+          name: AppRoutes.paywall.name,
+          builder: (context, state) => const PaywallScreen(),
         ),
       ],
       errorBuilder: (context, state) => Scaffold(
