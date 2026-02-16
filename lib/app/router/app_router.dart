@@ -1,64 +1,21 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import '../../modules/auth/auth_cubit.dart';
 import '../../pages/home/home_screen.dart';
 import 'app_routes.dart';
-import 'go_router_refresh_stream.dart';
 
 /// Конфигурация GoRouter для приложения
 ///
-/// ВАЖНО:
-/// 1. AuthCubit должен быть доступен через context.read<AuthCubit>()
-/// 2. refreshListenable автоматически вызывает redirect при изменении состояния
-/// 3. Не используйте context.go() внутри Cubit - только в UI
+/// Демо-приложение без авторизации
 class AppRouter {
-  final BuildContext context;
   late final GoRouter router;
 
-  AppRouter(this.context) {
-    final authCubit = context.read<AuthCubit>();
-
+  AppRouter() {
     router = GoRouter(
       initialLocation: AppRoutes.home.path,
       debugLogDiagnostics: true,
-
-      // Автоматический редирект при изменении состояния Auth
-      refreshListenable: GoRouterRefreshStream(authCubit.stream),
-
-      redirect: (context, state) {
-        final isAuthenticated = authCubit.state.isAuthenticated;
-        final isGoingToAuth = state.matchedLocation == AppRoutes.auth.path;
-
-        // Если не авторизован и идёт не на auth -> редирект на auth
-        if (!isAuthenticated && !isGoingToAuth) {
-          return AppRoutes.auth.path;
-        }
-
-        // Если авторизован и идёт на auth -> редирект на home
-        if (isAuthenticated && isGoingToAuth) {
-          return AppRoutes.home.path;
-        }
-
-        // Всё ок, редирект не нужен
-        return null;
-      },
-
       routes: [
         // ============================================
-        // PUBLIC ROUTES (без авторизации)
-        // ============================================
-        GoRoute(
-          path: AppRoutes.auth.path,
-          name: AppRoutes.auth.name,
-          builder: (context, state) => const Placeholder(
-            // TODO: Заменить на AuthScreen()
-            // color: Colors.blue,
-          ),
-        ),
-
-        // ============================================
-        // PROTECTED ROUTES (требуют авторизации)
+        // ГЛАВНАЯ СТРАНИЦА
         // ============================================
         GoRoute(
           path: AppRoutes.home.path,
@@ -66,25 +23,43 @@ class AppRouter {
           builder: (context, state) => const HomeScreen(),
         ),
 
+        // ============================================
+        // ОНБОРДИНГ
+        // ============================================
         GoRoute(
-          path: AppRoutes.profile.path,
-          name: AppRoutes.profile.name,
+          path: AppRoutes.onboarding.path,
+          name: AppRoutes.onboarding.name,
           builder: (context, state) => const Placeholder(
-            // TODO: Заменить на ProfileScreen()
-            // color: Colors.green,
+            // TODO: Заменить на OnboardingScreen()
           ),
         ),
 
+        // ============================================
+        // ПОДПИСКИ
+        // ============================================
         GoRoute(
-          path: AppRoutes.settings.path,
-          name: AppRoutes.settings.name,
+          path: AppRoutes.subscriptions.path,
+          name: AppRoutes.subscriptions.name,
           builder: (context, state) => const Placeholder(
-            // TODO: Заменить на SettingsScreen()
-            // color: Colors.orange,
+            // TODO: Заменить на SubscriptionsScreen()
           ),
+        ),
+
+        // ============================================
+        // ДЕТАЛИ ПОДПИСКИ
+        // ============================================
+        GoRoute(
+          path: AppRoutes.subscriptionDetail.path,
+          name: AppRoutes.subscriptionDetail.name,
+          builder: (context, state) {
+            final id = state.pathParameters['id'] ?? '';
+            return Placeholder(
+              // TODO: Заменить на SubscriptionDetailScreen(id: id)
+              child: Center(child: Text('Subscription ID: $id')),
+            );
+          },
         ),
       ],
-
       errorBuilder: (context, state) => Scaffold(
         appBar: AppBar(title: const Text('Ошибка 404')),
         body: Center(child: Text('Страница не найдена: ${state.uri}')),

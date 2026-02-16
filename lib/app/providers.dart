@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import '../modules/auth/auth_cubit.dart';
 
 /// Глобальные BlocProviders для всего приложения
 ///
-/// ВАЖНО: Порядок имеет значение!
-/// 1. Сначала cubits без зависимостей (AuthCubit)
-/// 2. Потом cubits которые зависят от других
+/// Для демо-приложения без авторизации
+/// Пока провайдеры не нужны, возвращаем просто child
 class AppProviders extends StatelessWidget {
   final Widget child;
 
@@ -14,31 +11,14 @@ class AppProviders extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        // ============================================
-        // КРИТИЧНЫЕ CUBITS (lazy: false)
-        // ============================================
+    // TODO: Когда добавятся cubits, обернуть в MultiBlocProvider
+    // return MultiBlocProvider(
+    //   providers: [
+    //     BlocProvider(create: (_) => SubscriptionsCubit()),
+    //   ],
+    //   child: child,
+    // );
 
-        // AuthCubit - всегда первый, нужен для роутинга
-        BlocProvider(
-          create: (_) => AuthCubit(),
-          lazy: false, // Загрузить сразу для восстановления сессии
-        ),
-
-        // ============================================
-        // FEATURE CUBITS (lazy: true по умолчанию)
-        // ============================================
-
-        // TODO: Добавить cubits для features здесь
-        // Пример:
-        // BlocProvider(
-        //   create: (context) => ItemsCubit(
-        //     authCubit: context.read<AuthCubit>(),
-        //   ),
-        // ),
-      ],
-      child: child,
-    );
+    return child;
   }
 }

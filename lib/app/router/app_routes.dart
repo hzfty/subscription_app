@@ -4,10 +4,10 @@
 /// - context.goNamed(AppRoutes.home.name)
 /// - AppRoutes.home.path для redirect
 enum AppRoutes {
-  auth('/auth'),
+  onboarding('/onboarding'),
   home('/'),
-  profile('/profile'),
-  settings('/settings');
+  subscriptions('/subscriptions'),
+  subscriptionDetail('/subscription/:id');
 
   final String path;
   const AppRoutes(this.path);

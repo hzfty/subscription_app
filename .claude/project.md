@@ -17,3 +17,10 @@ Initialized. Ready for development.
 
 Language: en
 Include Version: no
+
+## Git
+
+- **Workflow:** GitHub Flow
+- **Main branch:** main
+- **Remote:** https://github.com/hzfty/subscription_app.git
+- **Commit template:** .claude/commit-template.md
