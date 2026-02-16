@@ -4,9 +4,9 @@ import 'package:go_router/go_router.dart';
 import '../../modules/onboarding/onboarding_cubit.dart';
 import 'api/onboarding_page_cubit.dart';
 import 'api/onboarding_page_state.dart';
-import 'components/onboarding_buttons.dart';
-import 'components/onboarding_page.dart';
-import 'components/page_indicator.dart';
+import 'components/buttons/onboarding_buttons.dart';
+import 'components/pages/onboarding_page.dart';
+import 'components/indicators/page_indicator.dart';
 
 /// Экран онбординга с двумя страницами
 class OnboardingScreen extends StatelessWidget {
