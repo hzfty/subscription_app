@@ -1,0 +1,31 @@
+# Widgets Directory
+
+Эта директория предназначена для глобальных виджетов приложения.
+
+## Организация
+
+```
+widgets/
+├── buttons/
+│   ├── primary_button.dart
+│   └── secondary_button.dart
+├── dialogs/
+│   ├── confirm_dialog.dart
+│   └── info_dialog.dart
+└── forms/
+    ├── custom_text_field.dart
+    └── custom_dropdown.dart
+```
+
+## Что здесь хранить
+
+- Сложные виджеты с собственным API (Organisms)
+- Переиспользуемые виджеты уровня приложения
+- Кастомные UI компоненты
+
+## Что НЕ хранить здесь
+
+- Простые атомарные компоненты → используйте `shared/components/`
+- Feature-specific виджеты → используйте `pages/{feature}/components/`
+
+См. также: `modules/base/arch/component-atomicity.md`

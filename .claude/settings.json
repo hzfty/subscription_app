@@ -1,0 +1,50 @@
+{
+  "permissions": {
+    "allow": [
+      "Read",
+      "Write",
+      "Bash(git *)",
+      "Bash(ls *)",
+      "Bash(mkdir *)",
+      "Bash(cat *)",
+      "Bash(flutter *)",
+      "Bash(dart *)"
+    ],
+    "deny": [
+      "Read(.env*)",
+      "Read(*.key)",
+      "Read(*.pem)",
+      "Read(credentials.json)",
+      "Write(.env*)",
+      "Write(*.key)",
+      "Write(*.g.dart)",
+      "Write(*.freezed.dart)",
+      "Bash(rm -rf *)",
+      "Bash(sudo *)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Write(*.dart)",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "if grep -qE '(api_key|secret_key|password|bearer_token)\\s*[:=]\\s*[\"'\"'\"'][^\"'\"'\"']' \"$file\" 2>/dev/null; then echo 'BLOCKED: Hardcoded secrets detected in $file' && exit 1; fi"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write(*.dart)",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "dart format \"$file\" 2>/dev/null || true"
+          }
+        ]
+      }
+    ]
+  }
+}
