@@ -7,8 +7,9 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // Настройка HydratedBloc storage для персистентности состояния
+  final directory = await getApplicationDocumentsDirectory();
   HydratedBloc.storage = await HydratedStorage.build(
-    storageDirectory: await getApplicationDocumentsDirectory(),
+    storageDirectory: HydratedStorageDirectory(directory.path),
   );
 
   runApp(const MyApp());
