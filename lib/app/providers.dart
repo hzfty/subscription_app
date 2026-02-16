@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../modules/onboarding/onboarding_cubit.dart';
 
 /// Глобальные BlocProviders для всего приложения
-///
-/// Для демо-приложения без авторизации
-/// Пока провайдеры не нужны, возвращаем просто child
 class AppProviders extends StatelessWidget {
   final Widget child;
 
@@ -11,14 +10,12 @@ class AppProviders extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: Когда добавятся cubits, обернуть в MultiBlocProvider
-    // return MultiBlocProvider(
-    //   providers: [
-    //     BlocProvider(create: (_) => SubscriptionsCubit()),
-    //   ],
-    //   child: child,
-    // );
-
-    return child;
+    return MultiBlocProvider(
+      providers: [
+        // Cubit для управления онбордингом (сохраняется между сессиями)
+        BlocProvider(create: (_) => OnboardingCubit()),
+      ],
+      child: child,
+    );
   }
 }

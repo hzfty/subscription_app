@@ -1,34 +1,31 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../modules/onboarding/onboarding_cubit.dart';
 import 'providers.dart';
 import 'router/app_router.dart';
 import 'styles/app_theme.dart';
 
-class MyApp extends StatefulWidget {
+class MyApp extends StatelessWidget {
   const MyApp({super.key});
-
-  @override
-  State<MyApp> createState() => _MyAppState();
-}
-
-class _MyAppState extends State<MyApp> {
-  late final AppRouter _appRouter;
-
-  @override
-  void initState() {
-    super.initState();
-    _appRouter = AppRouter();
-  }
 
   @override
   Widget build(BuildContext context) {
     return AppProviders(
-      child: MaterialApp.router(
-        title: 'subscription_app',
-        theme: AppTheme.light(),
-        darkTheme: AppTheme.dark(),
-        themeMode: ThemeMode.system,
-        routerConfig: _appRouter.router,
-        debugShowCheckedModeBanner: false,
+      child: Builder(
+        builder: (context) {
+          // Получаем OnboardingCubit из провайдера для передачи в роутер
+          final onboardingCubit = context.read<OnboardingCubit>();
+          final appRouter = AppRouter(onboardingCubit: onboardingCubit);
+
+          return MaterialApp.router(
+            title: 'subscription_app',
+            theme: AppTheme.light(),
+            darkTheme: AppTheme.dark(),
+            themeMode: ThemeMode.system,
+            routerConfig: appRouter.router,
+            debugShowCheckedModeBanner: false,
+          );
+        },
       ),
     );
   }

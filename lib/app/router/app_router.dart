@@ -1,6 +1,9 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../pages/home/home_screen.dart';
+import '../../modules/onboarding/onboarding_cubit.dart';
+import '../../pages/onboarding/onboarding_screen.dart';
 import 'app_routes.dart';
 
 /// Конфигурация GoRouter для приложения
@@ -8,11 +11,29 @@ import 'app_routes.dart';
 /// Демо-приложение без авторизации
 class AppRouter {
   late final GoRouter router;
+  final OnboardingCubit onboardingCubit;
 
-  AppRouter() {
+  AppRouter({required this.onboardingCubit}) {
     router = GoRouter(
-      initialLocation: AppRoutes.home.path,
+      initialLocation: AppRoutes.onboarding.path,
       debugLogDiagnostics: true,
+      redirect: (context, state) {
+        // Если онбординг завершён и пользователь на странице онбординга - редирект на главную
+        final isOnboarding = state.matchedLocation == AppRoutes.onboarding.path;
+        final isCompleted = onboardingCubit.isCompleted;
+
+        if (isOnboarding && isCompleted) {
+          return AppRoutes.home.path;
+        }
+
+        // Если онбординг не завершён и пользователь не на онбординге - редирект на онбординг
+        if (!isOnboarding && !isCompleted) {
+          return AppRoutes.onboarding.path;
+        }
+
+        return null;
+      },
+      refreshListenable: _CubitRefreshNotifier(onboardingCubit.stream),
       routes: [
         // ============================================
         // ГЛАВНАЯ СТРАНИЦА
@@ -29,9 +50,7 @@ class AppRouter {
         GoRoute(
           path: AppRoutes.onboarding.path,
           name: AppRoutes.onboarding.name,
-          builder: (context, state) => const Placeholder(
-            // TODO: Заменить на OnboardingScreen()
-          ),
+          builder: (context, state) => const OnboardingScreen(),
         ),
 
         // ============================================
@@ -65,5 +84,22 @@ class AppRouter {
         body: Center(child: Text('Страница не найдена: ${state.uri}')),
       ),
     );
+  }
+}
+
+/// Helper для обновления GoRouter при изменении состояния Cubit
+class _CubitRefreshNotifier extends ChangeNotifier {
+  late final StreamSubscription<dynamic> _subscription;
+
+  _CubitRefreshNotifier(Stream<dynamic> stream) {
+    _subscription = stream.listen((_) {
+      notifyListeners();
+    });
+  }
+
+  @override
+  void dispose() {
+    _subscription.cancel();
+    super.dispose();
   }
 }
